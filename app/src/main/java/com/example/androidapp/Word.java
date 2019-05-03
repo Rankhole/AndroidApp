@@ -1,43 +1,23 @@
 package com.example.androidapp;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+import java.util.List;
 
 /**
- * Stellt ein Wort da. Wir speichern unser Wort in der Datenbank. Das Wort
- * enthält die dazu gehörenden vier Tabu Wörter.
+ * Interface für ein Wort.
  */
-@Entity
-public class Word {
-
-    @PrimaryKey
-    @NonNull
-    public String word;
-
-    @ColumnInfo(name = "first_tabu")
-    String firstTabu;
-
-    @ColumnInfo(name = "second_tabu")
-    String secondTabu;
-
-    @ColumnInfo(name = "third_tabu")
-    String thirdTabu;
-
-    @ColumnInfo(name = "fourth_tabu")
-    String fourthTabu;
+public interface Word {
 
     /**
-     * Für Testzwecke. Vergleicht zwei Wörter und gibt zurück, ob sie gleich sind.
+     * Liefert alle Tabu Wörter für das Wort zurück.
      *
-     * @param other Zweites Wort
-     * @return True, wenn biede gleich, sonst false
+     * @return Liste mit Strings aller Tabu Wörter
      */
-    boolean equals(Word other) {
-        return this.word.equals(other.word) && this.firstTabu.equals(other.firstTabu)
-                && this.secondTabu.equals(other.secondTabu) && this.thirdTabu.equals(other.thirdTabu)
-                && this.fourthTabu.equals(other.fourthTabu);
-    }
+    List<String> getForbiddenWords();
+
+    /**
+     * Liefert das Wort selbst als String zurück.
+     * @return String des Wortes
+     */
+    String getWord();
 
 }
