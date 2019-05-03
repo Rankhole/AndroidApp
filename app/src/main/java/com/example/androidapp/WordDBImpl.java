@@ -8,7 +8,7 @@ public class WordDBImpl implements WordDB {
 
     private List<Word> words;
 
-    public WordDBImpl() {
+    WordDBImpl() {
         words = new ArrayList<>();
     }
 
@@ -20,5 +20,10 @@ public class WordDBImpl implements WordDB {
     @Override
     public Word getRandomWord() {
         return words.get(new Random().nextInt(words.size()));
+    }
+
+    @Override
+    public int size() {
+        return words.size();
     }
 }

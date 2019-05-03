@@ -12,4 +12,11 @@ public interface WordDB {
      * @return Zufaelliges Wort
      */
     Word getRandomWord();
+
+    /**
+     * Gibt die Anzahl der Wörter in der Datnbank zurück.
+     *
+     * @return Anzahl Wörter
+     */
+    int size();
 }
