@@ -22,7 +22,7 @@ import java.util.UUID;
 public class ConnectActivity extends AppCompatActivity {
 
     private TextView status;
-    private Button listen, listDevices, goToSetup;
+    private Button listen, listDevices, goToSetup, pairDevice;
     private ListView listView;
 
     private BluetoothAdapter bluetoothAdapter;
@@ -60,6 +60,7 @@ public class ConnectActivity extends AppCompatActivity {
         this.listDevices = findViewById(R.id.buttonShowPaired);
         this.listView = findViewById(R.id.listView);
         this.goToSetup = findViewById(R.id.buttonGoToSetup);
+        this.pairDevice=findViewById(R.id.buttonPairNewDevice);
     }
 
 
@@ -77,6 +78,8 @@ public class ConnectActivity extends AppCompatActivity {
 
                 case STATE_CONNECTED:
                     status.setText("Connected");
+                    Intent intent = new Intent(getApplicationContext(), GamePreparation.class);
+                    startActivity(intent);
                     break;
 
                 case STATE_CONNECTION_FAILED:
@@ -128,6 +131,14 @@ public class ConnectActivity extends AppCompatActivity {
             }
         });
 
+        pairDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PairActivity.class);
+                startActivity(intent);
+            }
+        });
+
         goToSetup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,8 +153,7 @@ public class ConnectActivity extends AppCompatActivity {
                         connected = true;
                     }
                 } if(connected){
-                    Intent intent = new Intent(getApplicationContext(), GamePreparation.class);
-                    startActivity(intent);
+
                 }else{
                     status.setText("you are not connected");
                 }
