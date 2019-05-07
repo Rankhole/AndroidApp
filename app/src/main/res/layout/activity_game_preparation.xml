@@ -7,7 +7,7 @@
     tools:context=".GamePreparation">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -31,34 +31,34 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="Wer beginnt:"
-        app:layout_constraintBottom_toTopOf="@+id/checkBox2"
+        app:layout_constraintBottom_toTopOf="@+id/checkBoxB"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonStart" />
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/checkBoxA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Team A"
-        app:layout_constraintBaseline_toBaselineOf="@+id/checkBox2"
-        app:layout_constraintEnd_toStartOf="@+id/checkBox2"
+        app:layout_constraintBaseline_toBaselineOf="@+id/checkBoxB"
+        app:layout_constraintEnd_toStartOf="@+id/checkBoxB"
         app:layout_constraintHorizontal_bias="0.888"
         app:layout_constraintStart_toStartOf="parent" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/checkBoxB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:text="Team B"
-        app:layout_constraintBaseline_toBaselineOf="@+id/checkBox3"
-        app:layout_constraintEnd_toStartOf="@+id/checkBox3" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/checkBoxRandom"
+        app:layout_constraintEnd_toStartOf="@+id/checkBoxRandom" />
 
     <CheckBox
-        android:id="@+id/checkBox3"
+        android:id="@+id/checkBoxRandom"
         android:layout_width="80dp"
         android:layout_height="29dp"
         android:layout_marginTop="52dp"

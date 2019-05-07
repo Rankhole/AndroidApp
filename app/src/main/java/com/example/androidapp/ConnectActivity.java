@@ -2,6 +2,7 @@ package com.example.androidapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -16,10 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
-public class ConnectActivity extends AppCompatActivity {
+public class ConnectActivity extends AppCompatActivity  { // extends
 
     private TextView status;
     private Button listen, listDevices, goToSetup, pairDevice;
@@ -39,7 +42,9 @@ public class ConnectActivity extends AppCompatActivity {
 
     private static final String APP_NAME = "AndroidApp";
     private static final UUID MY_UUID = UUID.fromString("c6149cf5-c208-40a2-8def-5d1e3ec4ca02");
-    private boolean isServer = false;
+    protected static boolean isServer = false;
+     public static InputStream is = null;
+    public static OutputStream os = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,7 @@ public class ConnectActivity extends AppCompatActivity {
         this.listDevices = findViewById(R.id.buttonShowPaired);
         this.listView = findViewById(R.id.listView);
         this.goToSetup = findViewById(R.id.buttonGoToSetup);
-        this.pairDevice=findViewById(R.id.buttonPairNewDevice);
+        this.pairDevice = findViewById(R.id.buttonPairNewDevice);
     }
 
 
@@ -79,6 +84,16 @@ public class ConnectActivity extends AppCompatActivity {
                 case STATE_CONNECTED:
                     status.setText("Connected");
                     Intent intent = new Intent(getApplicationContext(), GamePreparation.class);
+
+                    if (server != null) {
+                        is=server.getInputStream();
+                        os=server.getOutputStream();
+                        isServer=true;
+                    }else{
+                        is=client.getInputStream();
+                        os=client.getOutputStream();
+                    }
+
                     startActivity(intent);
                     break;
 
@@ -139,26 +154,8 @@ public class ConnectActivity extends AppCompatActivity {
             }
         });
 
-        goToSetup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean connected = false;
-                if (isServer) {
-                    if (server.getInputStream() != null) {
-                        connected = true;
-                    }
-                }
-                if (!isServer) {
-                    if (client.getInputStream() != null) {
-                        connected = true;
-                    }
-                } if(connected){
-
-                }else{
-                    status.setText("you are not connected");
-                }
-            }
-        });
 
     }
+
+
 }

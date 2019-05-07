@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public class MainActivity extends AppCompatActivity {
     private Button multiplayer;
 
@@ -23,4 +26,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }
