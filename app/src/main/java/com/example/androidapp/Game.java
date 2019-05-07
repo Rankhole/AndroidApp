@@ -1,5 +1,9 @@
 package com.example.androidapp;
 
+import android.app.Activity;
+import android.content.Context;
+import android.widget.TextView;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,8 +25,12 @@ public class Game implements Runnable {
     private final int RANDOM_BEGIN = 3;
     private boolean TEAM_A = ConnectActivity.isServer;
     private int state;
+    private String status;
+    private Activity context;
+    private TextView textView;
 
-    public Game(String begin, InputStream is, OutputStream os) {
+
+    public Game(String begin, InputStream is, OutputStream os, Activity context, TextView textView) {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -30,6 +38,9 @@ public class Game implements Runnable {
         this.dis = new DataInputStream(this.is);
         this.dos = new DataOutputStream(this.os);
         this.state = 0;
+        this.status=null;
+        this.context=context;
+        this.textView=textView;
 
     }
 
@@ -56,10 +67,10 @@ public class Game implements Runnable {
         }
         switch ((state)) {
             case (A_BEGINS):
-                // Team A beginnt
+                refreshStatus("A beginnt");
                 break;
             case (B_BEGINS):
-                // Team B beginnt
+                refreshStatus("B beginnt");
                 break;
         }
     }
@@ -83,6 +94,15 @@ public class Game implements Runnable {
         }
     }
 
+    public void refreshStatus(final String msg){
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(msg);
+            }
+        });
+    }
+
     @Override
     public void run() {
         try {
@@ -90,5 +110,9 @@ public class Game implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getStatus(){
+        return this.status;
     }
 }

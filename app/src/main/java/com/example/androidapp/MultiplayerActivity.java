@@ -9,14 +9,15 @@ import android.widget.TextView;
 
 public class MultiplayerActivity extends AppCompatActivity {
 
-    private TextView statusText, team;
+    private TextView  team;
+    private static TextView statusText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
 
-        this.statusText = findViewById(R.id.textViewStatus);
+        statusText = findViewById(R.id.textViewStatus);
         this.team = findViewById(R.id.textViewTeam);
 
         if (ConnectActivity.isServer) {
@@ -27,10 +28,12 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String beginner = intent.getStringExtra("Beginner");
-        final Game game = new Game(beginner, ConnectActivity.is, ConnectActivity.os);
+        final Game game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText);
         Thread gameThread = new Thread(game);
         gameThread.start();
 
     }
+
+
 
 }
