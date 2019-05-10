@@ -50,7 +50,7 @@ public class PairActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     Toast.makeText(getApplicationContext(), "sende Kopplungsanfrage...", Toast.LENGTH_LONG).show();
-                    if(createBond(devices.get(position))){
+                    if (createBond(devices.get(position))) {
                         Toast.makeText(getApplicationContext(), "erfolgreich gekoppelt", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
@@ -93,7 +93,13 @@ public class PairActivity extends AppCompatActivity {
 
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 devices.add(device);
-                stringArrayList.add(device.getName());
+                String deviceName = "";
+                if (null == device.getName()) {
+                    deviceName = device.getAddress();
+                } else {
+                    deviceName = device.getName();
+                }
+                stringArrayList.add(deviceName);
                 arrayAdapterScan.notifyDataSetChanged();
             }
         }
