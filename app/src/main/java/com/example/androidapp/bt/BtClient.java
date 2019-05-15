@@ -1,6 +1,5 @@
-package com.example.androidapp;
+package com.example.androidapp.bt;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
@@ -38,7 +37,7 @@ public class BtClient extends Thread {
         try {
             socket.connect();
             Message message=Message.obtain();
-            message.what=ConnectActivity.STATE_CONNECTED;
+            message.what= ConnectActivity.STATE_CONNECTED;
             handler.sendMessage(message);
         } catch (IOException e) {
             e.printStackTrace();

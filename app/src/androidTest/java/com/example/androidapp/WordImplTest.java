@@ -1,5 +1,8 @@
 package com.example.androidapp;
 
+import com.example.androidapp.database.Word;
+import com.example.androidapp.database.WordImpl;
+
 import org.junit.Test;
 
 import java.util.ArrayList;

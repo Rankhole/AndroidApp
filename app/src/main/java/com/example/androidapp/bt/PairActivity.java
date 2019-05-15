@@ -1,4 +1,4 @@
-package com.example.androidapp;
+package com.example.androidapp.bt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+
+import com.example.androidapp.R;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

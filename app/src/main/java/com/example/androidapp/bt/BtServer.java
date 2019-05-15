@@ -1,4 +1,4 @@
-package com.example.androidapp;
+package com.example.androidapp.bt;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -39,7 +39,7 @@ public class BtServer extends Thread {
         while(socket==null){
             try {
                 Message message=Message.obtain();
-                message.what=ConnectActivity.STATE_CONNECTING;
+                message.what= ConnectActivity.STATE_CONNECTING;
                 handler.sendMessage(message);
 
                 socket=serverSocket.accept();

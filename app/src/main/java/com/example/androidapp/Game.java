@@ -1,8 +1,9 @@
 package com.example.androidapp;
 
 import android.app.Activity;
-import android.content.Context;
 import android.widget.TextView;
+
+import com.example.androidapp.bt.ConnectActivity;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

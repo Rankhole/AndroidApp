@@ -1,8 +1,7 @@
-package com.example.androidapp;
+package com.example.androidapp.bt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -15,14 +14,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.androidapp.GamePreparation;
+import com.example.androidapp.R;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
-public class ConnectActivity extends AppCompatActivity  { // extends
+public class ConnectActivity extends AppCompatActivity { // extends
 
     private TextView status;
     private Button listen, listDevices, goToSetup, pairDevice;
@@ -42,8 +43,8 @@ public class ConnectActivity extends AppCompatActivity  { // extends
 
     private static final String APP_NAME = "AndroidApp";
     private static final UUID MY_UUID = UUID.fromString("c6149cf5-c208-40a2-8def-5d1e3ec4ca02");
-    protected static boolean isServer = false;
-     public static InputStream is = null;
+    public static boolean isServer = false;
+    public static InputStream is = null;
     public static OutputStream os = null;
 
     @Override
@@ -86,12 +87,12 @@ public class ConnectActivity extends AppCompatActivity  { // extends
                     Intent intent = new Intent(getApplicationContext(), GamePreparation.class);
 
                     if (server != null) {
-                        is=server.getInputStream();
-                        os=server.getOutputStream();
-                        isServer=true;
-                    }else{
-                        is=client.getInputStream();
-                        os=client.getOutputStream();
+                        is = server.getInputStream();
+                        os = server.getOutputStream();
+                        isServer = true;
+                    } else {
+                        is = client.getInputStream();
+                        os = client.getOutputStream();
                     }
 
                     startActivity(intent);
