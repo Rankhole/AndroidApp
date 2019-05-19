@@ -7,7 +7,7 @@ public class WordImpl implements Word {
     private String word;
     private List<String> forbiddenWords;
 
-    WordImpl(String word, List<String> forbiddenWords) throws Exception {
+    public WordImpl(String word, List<String> forbiddenWords) throws Exception {
         if (word.equals("") || word == null || forbiddenWords == null)
             throw new Exception("The word or forbidden words cannot be null or empty!");
         if (forbiddenWords.size() != 4)

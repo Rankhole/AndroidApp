@@ -8,7 +8,7 @@ public class WordDBImpl implements WordDB {
 
     private List<Word> words;
 
-    WordDBImpl() {
+    public WordDBImpl() {
         words = new ArrayList<>();
     }
 
