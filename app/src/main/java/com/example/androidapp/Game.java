@@ -1,6 +1,7 @@
 package com.example.androidapp;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
@@ -12,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.Random;
+
+import static android.app.PendingIntent.getActivity;
 
 public class Game implements Runnable {
 
@@ -29,9 +32,10 @@ public class Game implements Runnable {
     private String status;
     private Activity context;
     private TextView textView;
+    private MultiplayerActivity multiplayerActivity;
 
 
-    public Game(String begin, InputStream is, OutputStream os, Activity context, TextView textView) {
+    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView) {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -39,11 +43,13 @@ public class Game implements Runnable {
         this.dis = new DataInputStream(this.is);
         this.dos = new DataOutputStream(this.os);
         this.state = 0;
-        this.status=null;
-        this.context=context;
-        this.textView=textView;
+        this.status = null;
+        this.multiplayerActivity = context;
+        this.context = context;
+        this.textView = textView;
 
     }
+
 
     private void negotiate() throws IOException {
         int sendBeginner = 0;
@@ -74,7 +80,15 @@ public class Game implements Runnable {
                 refreshStatus("B beginnt");
                 break;
         }
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                multiplayerActivity.startTimer();
+            }
+        });
+
     }
+
 
     private void sendRandomInt() throws IOException {
         int myRandomNumber = r.nextInt();
@@ -95,7 +109,7 @@ public class Game implements Runnable {
         }
     }
 
-    public void refreshStatus(final String msg){
+    public void refreshStatus(final String msg) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -113,7 +127,7 @@ public class Game implements Runnable {
         }
     }
 
-    public String getStatus(){
+    public String getStatus() {
         return this.status;
     }
 }
