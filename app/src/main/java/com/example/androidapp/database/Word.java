@@ -16,8 +16,13 @@ public interface Word {
 
     /**
      * Liefert das Wort selbst als String zurück.
+     *
      * @return String des Wortes
      */
     String getWord();
+
+    public String getStringOfWord();
+
+    public Word getWordFromString(String wordString);
 
 }

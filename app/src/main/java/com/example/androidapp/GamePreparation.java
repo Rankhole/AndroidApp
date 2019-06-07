@@ -10,11 +10,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.androidapp.bt.ConnectActivity;
+
 public class GamePreparation extends AppCompatActivity {
 
     private CheckBox teamA, teamB, randomTeam;
     private Button start;
     private String begin = "";
+    private TextView showTeam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,13 @@ public class GamePreparation extends AppCompatActivity {
         this.randomTeam = findViewById(R.id.checkBoxRandom);
         this.start = findViewById(R.id.buttonStart);
         TextView textView=findViewById(R.id.textView3);
+        this.showTeam=findViewById(R.id.textViewTeam);
+
+        if (ConnectActivity.isServer) {
+            showTeam.setText("TEAM A");
+        } else {
+            showTeam.setText("TEAM B");
+        }
 
         textView.setText("Waehle aus welches Team beginnen soll:");
 

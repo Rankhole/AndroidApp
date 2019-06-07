@@ -1,6 +1,8 @@
 package com.example.androidapp.database;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class WordImpl implements Word {
 
@@ -24,5 +26,31 @@ public class WordImpl implements Word {
     @Override
     public String getWord() {
         return this.word;
+    }
+
+
+    public Word getWordFromString(String wordString){
+        StringTokenizer stringTokenizer= new StringTokenizer(wordString,"||");
+        String word=stringTokenizer.nextToken();
+        List<String> forbiddenWords= new ArrayList<>();
+        while(stringTokenizer.hasMoreTokens()){
+            forbiddenWords.add(stringTokenizer.nextToken());
+        }
+        Word temp=null;
+        try {
+            temp=new WordImpl(word, forbiddenWords);
+        } catch (Exception e) {
+        }
+        return temp;
+    }
+
+    public String getStringOfWord(){
+        String wordString=this.getWord()+"||";
+        List<String> forbiddenWords=this.getForbiddenWords();
+        for(int i=0; i<forbiddenWords.size();i++){
+            wordString=wordString+forbiddenWords.get(i)+"||";
+
+        }
+        return wordString;
     }
 }
