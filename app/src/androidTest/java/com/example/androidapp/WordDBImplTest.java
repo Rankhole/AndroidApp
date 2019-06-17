@@ -36,7 +36,11 @@ public class WordDBImplTest {
         }
         db.add(word);
         assertEquals(1, db.size());
-        assertEquals(db.getRandomWord(), word);
+        try {
+            assertEquals(db.getRandomWord(), word);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -68,7 +72,13 @@ public class WordDBImplTest {
         int c1 = 0, c2 = 0, c3 = 0;
         //Um sicher zu gehen, dass alle Wörter mal dran kamen
         for (int i = 0; i < 1000; i++) {
-            Word returned = db.getRandomWord();
+            Word returned = null;
+            try {
+                returned = db.getRandomWord();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if (returned.equals(word)) {
                 w1 = true;
                 c1++;

@@ -1,5 +1,7 @@
 package com.example.androidapp.database;
 
+import java.util.List;
+
 public interface WordDB {
     /**
      * Fuegt neues Wort zur Datenbank hinzu.
@@ -11,7 +13,7 @@ public interface WordDB {
      * Gibt zufaelliges Wort aus der Datenbank zurueck.
      * @return Zufaelliges Wort
      */
-    Word getRandomWord();
+    Word getRandomWord() throws Exception;
 
     /**
      * Gibt die Anzahl der Wörter in der Datnbank zurück.
@@ -19,4 +21,18 @@ public interface WordDB {
      * @return Anzahl Wörter
      */
     int size();
+
+    /**
+     * Gibt die Liste der Wörter zurück.
+     *
+     * @return Liste der Wörter
+     */
+    List<Word> getList();
+
+    /**
+     * Setzt die Liste der Wörter.
+     *
+     * @param list Liste der Wörter
+     */
+    void setList(List<Word> list);
 }

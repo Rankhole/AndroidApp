@@ -25,6 +25,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:core:1.1.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
     def room_version = "2.1.0-alpha07"
 
     // Dependancy für Room (Datenbank)
