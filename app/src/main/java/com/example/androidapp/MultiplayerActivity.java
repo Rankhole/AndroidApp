@@ -3,6 +3,8 @@ package com.example.androidapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -29,9 +31,9 @@ public class MultiplayerActivity extends AppCompatActivity {
     private static TextView statusText, word;
     private TextView team, counter;
     private CountDownTimer countDownTimer;
-    private long timeLeftInMilliseconds = 60000; // Dauer einer Runde
+    private long timeLeftInMilliseconds = 10000; // Dauer einer Runde
     private boolean timerRunning;
-    private Button skipWord, forbiddenWord;
+    private Button skipWord, forbiddenWord, changeTeam;
     private Game game;
     private WordDB wordDB;
 
@@ -42,7 +44,16 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         this.skipWord = findViewById(R.id.buttonSkipWord);
         this.forbiddenWord = findViewById(R.id.buttonForbiddenWord);
+        this.changeTeam=findViewById(R.id.buttonChangeTeam);
+        changeTeam.setVisibility(View.INVISIBLE);
 
+        changeTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                game.changeTeam();
+                changeTeam.setVisibility(View.INVISIBLE);
+            }
+        });
         statusText = findViewById(R.id.textViewStatus);
         word = findViewById(R.id.textViewWord);
         this.team = findViewById(R.id.textViewTeam);
@@ -57,7 +68,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         String beginner = intent.getStringExtra("Beginner");
         try {
             loadFromResource();
-            System.out.println(wordDB.getRandomWord().getStringOfWord());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,7 +95,7 @@ public class MultiplayerActivity extends AppCompatActivity {
             public void onFinish() {
                 counter.setText("0:00");
                 timeLeftInMilliseconds = 10000; // Timer wird wieder zurueckgesetzt
-                game.changeTeam(); // nach Ablauf der Zeit wechseln die Teams
+                changeTeam.setVisibility(View.VISIBLE);
             }
         }.start();
     }
@@ -154,12 +165,13 @@ public class MultiplayerActivity extends AppCompatActivity {
                 } else {
                     Word word = new WordImpl(wordList.get(0), wordList.subList(1, wordList.size()));
                     wordDB.add(word);
+                    System.err.println(word.getWord());
                 }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
-            fis.close();
+            //fis.close();
         }
     }
 
@@ -185,6 +197,8 @@ public class MultiplayerActivity extends AppCompatActivity {
     }
 
     public WordDB getWordDB() {
+
+
         return this.wordDB;
     }
 

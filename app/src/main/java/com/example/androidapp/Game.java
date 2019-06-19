@@ -1,6 +1,7 @@
 package com.example.androidapp;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 import static android.app.PendingIntent.getActivity;
+import static android.content.ContentValues.TAG;
 
 public class Game implements Runnable {
 
@@ -62,29 +64,29 @@ public class Game implements Runnable {
             TEAM_A = false;
         }
 
+        ArrayList<String> forbiddenWord= new ArrayList<>();
+        forbiddenWord.add("forbidden");
+        forbiddenWord.add("forbidden");
+        forbiddenWord.add("forbidden");
+        forbiddenWord.add("forbidden");
 
-        wordDB = new WordDBImpl();
-        List<String> forbiddenWords = new ArrayList<>();
-        forbiddenWords.add("deine mudda");
-        forbiddenWords.add("ehm");
-        forbiddenWords.add("der");
-        forbiddenWords.add("und");
-
-        Word word2 = null;
-        Word word3 = null;
-        Word word4 = null;
         try {
-            word1 = new WordImpl("Haus", forbiddenWords);
-            word2 = new WordImpl("Boot", forbiddenWords);
-            word3 = new WordImpl("Sommer", forbiddenWords);     // Aufbau der Datenbank hier nur zu Demo zwecken, wird spaeter an anderer Stelle realisiert
-            word4 = new WordImpl("Sonne", forbiddenWords);
+            word1=new WordImpl("test", forbiddenWord);
+            wordDB=new WordDBImpl();
+            wordDB.add(word1);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        wordDB.add(word1);
-        wordDB.add(word2);
-        wordDB.add(word3);
-        wordDB.add(word4);
+        try {
+            //multiplayerActivity.loadFromResource();
+           // wordDB=multiplayerActivity.getWordDB();       // NullPointerException!!
+
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -227,18 +229,29 @@ public class Game implements Runnable {
      * wechselt das aktive Team
      */
     public void changeTeam() {
-        if (state == A_isOnMove) {
-            state = B_isOnMove;
-        } else {
-            state = A_isOnMove;
+        try {
+            dos.writeInt(404);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        if (state == A_isOnMove) {
-            refreshStatus("A ist an der Reihe");
-        } else {
-            refreshStatus("B ist an der Reihe");
+        try {
+            if(dis.readInt()==404) {
+                if (state == A_isOnMove) {
+                    state = B_isOnMove;
+                } else {
+                    state = A_isOnMove;
+                }
+                if (state == A_isOnMove) {
+                    refreshStatus("A ist an der Reihe");
+                } else {
+                    refreshStatus("B ist an der Reihe");
+                }
+                multiplayerActivity.startTimer();
+                startRound();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        multiplayerActivity.startTimer();
-        startRound();
     }
 
 
