@@ -3,25 +3,23 @@ package com.example.androidapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.androidapp.bt.ConnectActivity;
 import com.example.androidapp.database.Word;
 import com.example.androidapp.database.WordDB;
 import com.example.androidapp.database.WordDBImpl;
 import com.example.androidapp.database.WordImpl;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -69,11 +67,16 @@ public class MultiplayerActivity extends AppCompatActivity {
         try {
             loadFromResource();
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText, word, this.wordDB);
+        try {
+            game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText, word, this.wordDB);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Thread gameThread = new Thread(game);
         gameThread.start();
     }
@@ -148,10 +151,11 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         this.wordDB = new WordDBImpl();
 
-        FileInputStream fis = null;
-
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(getClassLoader().getResourceAsStream("defaultDatabase.txt")));
+
+            InputStream is = this.getResources().openRawResource(R.raw.default_database);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = br.readLine()) != null) {
                 line.trim();
@@ -160,18 +164,19 @@ public class MultiplayerActivity extends AppCompatActivity {
                 for (String e : words) {
                     wordList.add(e);
                 }
-                if (words.length != 4) {
-                    throw new Exception("File corrupted!");
+                if (words.length != 5) { // vorher 4, kam eine Exception (1 wort + 4 verbotene)
+                    throw new Exception("File corrupted!" +words.length);
                 } else {
                     Word word = new WordImpl(wordList.get(0), wordList.subList(1, wordList.size()));
                     wordDB.add(word);
-                    System.err.println(word.getWord());
+
                 }
             }
-        } catch (FileNotFoundException e) {
+            is.close();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            //fis.close();
+
         }
     }
 

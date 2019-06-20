@@ -45,7 +45,7 @@ public class Game implements Runnable {
     private WordDB wordDB;
     Word word1 = null;
 
-    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, WordDB wordDb) {
+    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, WordDB wordDb) throws Exception {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -64,20 +64,13 @@ public class Game implements Runnable {
             TEAM_A = false;
         }
 
-        ArrayList<String> forbiddenWord= new ArrayList<>();
-        forbiddenWord.add("forbidden");
-        forbiddenWord.add("forbidden");
-        forbiddenWord.add("forbidden");
-        forbiddenWord.add("forbidden");
-/*
+        this.wordDB=wordDb;
+
         try {
-            word1=new WordImpl("test", forbiddenWord);
-            wordDB=new WordDBImpl();
-            wordDB.add(word1);
+            word1=wordDb.getRandomWord();
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
-        this.wordDB=wordDb;
+        }
 
     }
 
