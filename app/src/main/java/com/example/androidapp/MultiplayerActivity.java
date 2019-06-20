@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class MultiplayerActivity extends AppCompatActivity {
 
     private static TextView statusText, word;
-    private TextView team, counter;
+    private TextView team, counter, forb1, forb2, forb3, forb4;
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds = 10000; // Dauer einer Runde
     private boolean timerRunning;
@@ -39,6 +39,11 @@ public class MultiplayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
+
+        this.forb1=findViewById(R.id.textViewForbidden1);
+        this.forb2=findViewById(R.id.textViewForbidden2);
+        this.forb3=findViewById(R.id.textViewForbidden3);
+        this.forb4=findViewById(R.id.textViewForbidden4);
 
         this.skipWord = findViewById(R.id.buttonSkipWord);
         this.forbiddenWord = findViewById(R.id.buttonForbiddenWord);
@@ -73,7 +78,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
 
         try {
-            game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText, word, this.wordDB);
+            game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText, word,forb1, forb2, forb3, forb4, this.wordDB);
         } catch (Exception e) {
             e.printStackTrace();
         }

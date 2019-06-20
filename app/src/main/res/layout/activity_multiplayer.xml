@@ -40,26 +40,26 @@
         android:layout_marginTop="68dp"
         android:layout_marginEnd="28dp"
         android:text="forbidden1"
-        app:layout_constraintEnd_toStartOf="@+id/textView7"
+        app:layout_constraintEnd_toStartOf="@+id/textViewForbidden2"
         app:layout_constraintHorizontal_bias="0.569"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWord" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/textViewForbidden3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="28dp"
         android:text="forbidden3"
-        app:layout_constraintEnd_toStartOf="@+id/textView8"
+        app:layout_constraintEnd_toStartOf="@+id/textViewForbidden4"
         app:layout_constraintHorizontal_bias="0.563"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewForbidden1" />
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/textViewForbidden2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="104dp"
@@ -68,12 +68,12 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/textViewForbidden4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="104dp"
         android:text="forbidden4"
-        app:layout_constraintBaseline_toBaselineOf="@+id/textView6"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewForbidden3"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
@@ -98,7 +98,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.749"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:layout_constraintTop_toBottomOf="@+id/textViewForbidden4"
         app:layout_constraintVertical_bias="0.582"
         tools:text="skip" />
 
@@ -126,7 +126,7 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonSkipWord"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textViewForbidden3"
         app:layout_constraintVertical_bias="0.588"
         tools:text="Forbidden Word" />
 

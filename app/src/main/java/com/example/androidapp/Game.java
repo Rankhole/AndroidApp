@@ -40,12 +40,12 @@ public class Game implements Runnable {
     private int state;
     private String status;
     private Activity context;
-    private TextView textView, wordView;
+    private TextView textView, wordView, forb1, forb2, forb3, forb4;
     private MultiplayerActivity multiplayerActivity;
     private WordDB wordDB;
     Word word1 = null;
 
-    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, WordDB wordDb) throws Exception {
+    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2,TextView forb1, TextView forb2, TextView forb3, TextView forb4, WordDB wordDb)  {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -58,6 +58,10 @@ public class Game implements Runnable {
         this.context = context;
         this.textView = textView;
         this.wordView=textView2;
+        this.forb1=forb1;
+        this.forb2=forb2;
+        this.forb3=forb3;
+        this.forb4=forb4;
         if (ConnectActivity.isServer) {
             TEAM_A = true;
         } else {
@@ -118,7 +122,7 @@ public class Game implements Runnable {
         try {
             if (TEAM_A) {
                 Word word=wordDB.getRandomWord();
-                refreshWord(word.getWord());
+                refreshWord(word.getWord(), word.getForbiddenWords());
                 if (state == A_isOnMove) {
 
                     sendWord(word);
@@ -128,7 +132,9 @@ public class Game implements Runnable {
                     // int action = dis.readInt();
                 }
             } else {
-                refreshWord(getWord().getWord());
+                Word temp=getWord();
+
+                refreshWord(temp.getWord(), temp.getForbiddenWords());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,7 +193,7 @@ public class Game implements Runnable {
     }
 
 
-    private void refreshWord(final String word) {
+    private void refreshWord(final String word, List<String> forbiddenWords) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
