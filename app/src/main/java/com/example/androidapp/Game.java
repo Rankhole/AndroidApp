@@ -45,7 +45,7 @@ public class Game implements Runnable {
     private WordDB wordDB;
     Word word1 = null;
 
-    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2) {
+    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, WordDB wordDb) {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -69,24 +69,15 @@ public class Game implements Runnable {
         forbiddenWord.add("forbidden");
         forbiddenWord.add("forbidden");
         forbiddenWord.add("forbidden");
-
+/*
         try {
             word1=new WordImpl("test", forbiddenWord);
             wordDB=new WordDBImpl();
             wordDB.add(word1);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        try {
-            //multiplayerActivity.loadFromResource();
-           // wordDB=multiplayerActivity.getWordDB();       // NullPointerException!!
-
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }*/
+        this.wordDB=wordDb;
 
     }
 

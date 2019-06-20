@@ -73,7 +73,7 @@ public class MultiplayerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText, word);
+        game = new Game(beginner, ConnectActivity.is, ConnectActivity.os, this, statusText, word, this.wordDB);
         Thread gameThread = new Thread(game);
         gameThread.start();
     }
