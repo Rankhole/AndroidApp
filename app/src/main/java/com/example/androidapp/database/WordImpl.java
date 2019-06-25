@@ -40,6 +40,7 @@ public class WordImpl implements Word {
         try {
             temp=new WordImpl(word, forbiddenWords);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return temp;
     }
