@@ -1,6 +1,8 @@
 package com.example.androidapp;
 
 import android.app.Activity;
+import android.os.Looper;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
@@ -61,7 +63,7 @@ public class Game implements Runnable {
         tries = 0;
         enemyTries = 0;
         skips = 0;
-
+        state = A_isOnMove;
         TEAM_A = ConnectActivity.isServer;
 
         this.wordDB = wordDb;
@@ -261,7 +263,7 @@ public class Game implements Runnable {
                             enemyTries = 0;
                             if (state == A_isOnMove) {
                                 state = B_isOnMove;
-                            } else {
+                            } else if (state == B_isOnMove) {
                                 state = A_isOnMove;
                             }
                             if (state == A_isOnMove) {
@@ -269,58 +271,87 @@ public class Game implements Runnable {
                             } else {
                                 refreshStatus("B ist an der Reihe");
                             }
-                            multiplayerActivity.startTimer();
+
+                            context.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    multiplayerActivity.startTimer();
+                                }
+                            });
                             startRound();
                             break;
                         case "changeacknowledged":
                             tries = 0;
                             enemyTries = 0;
+
                             if (state == A_isOnMove) {
                                 state = B_isOnMove;
-                            } else {
+                            } else if (state == B_isOnMove) {
                                 state = A_isOnMove;
                             }
                             if (state == A_isOnMove) {
                                 refreshStatus("A ist an der Reihe");
-                            } else {
+                            } else if(state==B_isOnMove){
                                 refreshStatus("B ist an der Reihe");
-                            }
-                            multiplayerActivity.startTimer();
-                            startRound();
-                            break;
-                        case "a":
-                            state = A_isOnMove;
-                            startPassiveTimer();
-                        case "b":
-                            state = B_isOnMove;
-                            startPassiveTimer();
-                        default:
-                            try {
-                                if (TEAM_A) {
-                                    sendWord(wordDB.getRandomWord());
-                                } else {
-                                    Word temp = word1.getWordFromString(msg);
-                                    refreshWord(temp.getWord(), temp.getForbiddenWords());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            break;
+                            }else{
+                            refreshStatus("error");
+                        }
                     }
+
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            multiplayerActivity.startTimer();
+                        }
+                    });
+                    startRound();
+                    break;
+                    case "a":
+                        state = A_isOnMove;
+                        startPassiveTimer();
+                        break;
+                    case "b":
+                        state = B_isOnMove;
+                        startPassiveTimer();
+                        break;
+                    default:
+                        Log.d("WORD", msg);
+                        try {
+                            if (TEAM_A) {
+                                sendWord(wordDB.getRandomWord());
+                            } else {
+                                Word temp = word1.getWordFromString(msg);
+                                refreshWord(temp.getWord(), temp.getForbiddenWords());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
             }
-        };
-
-        exchangerThread = new Thread(exchanger);
-        exchangerThread.start();
-
-        try {
-            if (TEAM_A)
-                this.startTimer();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
+
+    ;
+
+    exchangerThread =new
+
+    Thread(exchanger);
+        exchangerThread.start();
+
+        try
+
+    {
+        if (TEAM_A)
+            this.startTimer();
+    } catch(
+    IOException e)
+
+    {
+        e.printStackTrace();
+    }
+
+}
 
     public String getStatus() {
         return this.status;

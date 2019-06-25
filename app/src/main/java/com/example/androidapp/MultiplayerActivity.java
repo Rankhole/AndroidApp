@@ -58,6 +58,20 @@ public class MultiplayerActivity extends AppCompatActivity {
                 changeTeam.setVisibility(View.INVISIBLE);
             }
         });
+
+        forbiddenWord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                game.forbiddenWord();
+            }
+        });
+
+        skipWord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                game.skipWord();
+            }
+        });
         statusText = findViewById(R.id.textViewStatus);
         word = findViewById(R.id.textViewWord);
         this.team = findViewById(R.id.textViewTeam);
