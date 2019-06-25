@@ -6,12 +6,15 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.androidapp.bt.ConnectActivity;
 import com.example.androidapp.database.Word;
 import com.example.androidapp.database.WordDB;
 import com.example.androidapp.database.WordDBImpl;
 import com.example.androidapp.database.WordImpl;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -122,6 +125,13 @@ public class MultiplayerActivity extends AppCompatActivity {
                 changeTeam.setVisibility(View.VISIBLE);
             }
         }.start();
+    }
+
+    /**
+     * Macht den ChangeTeam Knopf Unsichtbar.
+     */
+    public void makeInvisible() {
+        changeTeam.setVisibility(View.INVISIBLE);
     }
 
 

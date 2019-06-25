@@ -30,6 +30,7 @@ public class MultiplayerActivityTest {
 
     /**
      * FÜRS ERSTE IST DIESER TEST AUS.
+     * Der Test bewies trotzdem, dass das Laden lief.
      * Das Problem: die MultiplayerActivity erstellt beim onCreate die Game Instanzen, welche aber
      * nur in Abhängigkeit mit vorheriger Ausführung der ConnectActivity richtig funktionieren.
      *
