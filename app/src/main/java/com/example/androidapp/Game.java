@@ -71,7 +71,7 @@ public class Game implements Runnable {
         }
     }
 
-    private void negotiate() throws IOException {    // Aushandeln des Beginner-Teams
+    private void negotiate() throws IOException {    //Aushandeln des Beginner-Teams
         int sendBeginner = 0;
         switch (begin) {
             case ("a"):
