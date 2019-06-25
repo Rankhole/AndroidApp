@@ -315,7 +315,8 @@ public class Game implements Runnable {
         exchangerThread.start();
 
         try {
-            this.startTimer();
+            if (TEAM_A)
+                this.startTimer();
         } catch (IOException e) {
             e.printStackTrace();
         }
