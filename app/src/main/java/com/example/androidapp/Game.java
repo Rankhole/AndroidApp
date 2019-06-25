@@ -1,8 +1,6 @@
 package com.example.androidapp;
 
 import android.app.Activity;
-import android.util.Log;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
@@ -19,17 +17,18 @@ import java.util.Random;
 
 public class Game implements Runnable {
 
+    private final int A_isOnMove = 1;   // Team A ist immer das Server Team
+    private final int B_isOnMove = 2;
+    private final int RANDOM_BEGIN = 3;
+    private final int NEXT_WORD = 4;
+    private final int ROUND_COMPLETED = 0;
+    Word word1 = null;
     private InputStream is;
     private OutputStream os;
     private DataOutputStream dos;
     private DataInputStream dis;
     private String begin;
     private Random r;
-    private final int A_isOnMove = 1;   // Team A ist immer das Server Team
-    private final int B_isOnMove = 2;
-    private final int RANDOM_BEGIN = 3;
-    private final int NEXT_WORD = 4;
-    private final int ROUND_COMPLETED = 0;
     private boolean TEAM_A = false;
     private int state;
     private String status;
@@ -37,9 +36,11 @@ public class Game implements Runnable {
     private TextView textView, wordView, forb1, forb2, forb3, forb4;
     private MultiplayerActivity multiplayerActivity;
     private WordDB wordDB;
-    Word word1 = null;
+    private int tries;
+    private int enemyTries;
+    private int skips;
 
-    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, TextView forb1, TextView forb2, TextView forb3, TextView forb4, WordDB wordDb) {
+    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, TextView forb1, TextView forb2, TextView forb3, TextView forb4, final WordDB wordDb) {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -56,11 +57,52 @@ public class Game implements Runnable {
         this.forb2 = forb2;
         this.forb3 = forb3;
         this.forb4 = forb4;
-        if (ConnectActivity.isServer) {
-            TEAM_A = true;
-        } else {
-            TEAM_A = false;
-        }
+        tries = 0;
+        enemyTries = 0;
+        skips = 0;
+
+        Runnable exchanger = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    String msg = null;
+                    try {
+                        msg = dis.readUTF();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    switch (msg) {
+                        case "forbiddenword":
+                            enemyTries++;
+                            if (enemyTries == 3) {
+                                changeTeam();
+                            }
+                            break;
+                        case "changeteam":
+                            changeTeam();
+                            break;
+                        default:
+                            try {
+                                if (TEAM_A) {
+                                    sendWord(wordDb.getRandomWord());
+                                } else {
+                                    Word temp = getWord();
+                                    refreshWord(temp.getWord(), temp.getForbiddenWords());
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
+                }
+            }
+        };
+
+        Thread exchangerThread = new Thread(exchanger);
+        exchangerThread.start();
+
+        TEAM_A = ConnectActivity.isServer;
 
         this.wordDB = wordDb;
 
@@ -69,6 +111,7 @@ public class Game implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void negotiate() throws IOException {    //Aushandeln des Beginner-Teams
@@ -132,7 +175,7 @@ public class Game implements Runnable {
                 if (active()) {
                     // Team B aktiv
 
-                }else{
+                } else {
                     // warte, ob neues Wort gesendet wurde (wenn A Skip Word gedrueckt hat
 
                 }
@@ -143,6 +186,35 @@ public class Game implements Runnable {
     }
 
 
+    public void forbiddenWord() {
+        try {
+            tries++;
+            dos.writeUTF("forbiddenword");
+            if (tries == 3) {
+                changeTeam();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void skipWord() {
+        if (skips < 3) {
+            try {
+                if (TEAM_A) {
+                    Word temp = wordDB.getRandomWord();
+                    refreshWord(temp.getWord(), temp.getForbiddenWords());
+                    sendWord(temp);
+                } else {
+                    dos.writeUTF("skipword"); //egal welches Wort, hauptsache Server schickt neues Wort
+                    Word temp = getWord();
+                    refreshWord(temp.getWord(), temp.getForbiddenWords());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     // liest Wort aus Inputstream
@@ -230,6 +302,8 @@ public class Game implements Runnable {
      * wechselt das aktive Team
      */
     public void changeTeam() {
+        tries = 0;
+        enemyTries = 0;
         try {
 
             dos.writeInt(404);
@@ -257,26 +331,23 @@ public class Game implements Runnable {
     }
 
 
-    public boolean active(){
-        if(TEAM_A&& state==A_isOnMove){
+    public boolean active() {
+        if (TEAM_A && state == A_isOnMove) {
             return true;
         }
-        if(!TEAM_A && state==B_isOnMove){
-            return true;
-        }
-        return false;
+        return !TEAM_A && state == B_isOnMove;
     }
 
-    public int getState(){
+    public int getState() {
         return this.state;
     }
 
-    public void setTEAM_A(boolean teamA){
-        this.TEAM_A=teamA;
+    public void setState(int state) {
+        this.state = state;
     }
 
-    public void setState(int state){
-        this.state=state;
+    public void setTEAM_A(boolean teamA) {
+        this.TEAM_A = teamA;
     }
 
 }
