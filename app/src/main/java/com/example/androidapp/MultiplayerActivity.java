@@ -32,7 +32,7 @@ public class MultiplayerActivity extends AppCompatActivity {
     private static TextView statusText, word;
     private TextView team, counter, forb1, forb2, forb3, forb4;
     private CountDownTimer countDownTimer;
-    private long timeLeftInMilliseconds = 10000; // Dauer einer Runde
+    private long timeLeftInMilliseconds = 20000; // Dauer einer Runde
     private boolean timerRunning;
     private Button skipWord, forbiddenWord, changeTeam;
     private Game game;
@@ -121,7 +121,7 @@ public class MultiplayerActivity extends AppCompatActivity {
             public void onFinish() {
 
                 counter.setText("0:00");
-                timeLeftInMilliseconds = 10000; // Timer wird wieder zurueckgesetzt
+                timeLeftInMilliseconds = 20000; // Timer wird wieder zurueckgesetzt
                 changeTeam.setVisibility(View.VISIBLE);
             }
         }.start();

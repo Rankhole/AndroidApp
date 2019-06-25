@@ -1,6 +1,7 @@
 package com.example.androidapp;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
@@ -48,7 +49,7 @@ public class Game implements Runnable {
         this.os = os;
         this.dis = new DataInputStream(this.is);
         this.dos = new DataOutputStream(this.os);
-        this.state = 0;
+        this.state = A_isOnMove;
         this.status = null;
         this.multiplayerActivity = context;
         this.context = context;
@@ -75,6 +76,7 @@ public class Game implements Runnable {
 
     private void startTimer() throws IOException {    //Aushandeln des Beginner-Teams
         dos.writeUTF(begin);
+
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -129,8 +131,11 @@ public class Game implements Runnable {
                 }
             }
             dos.writeUTF("forbiddenword");
+            Log.d("FORBIDDENBEFOR", ""+tries+ "enemy:" +enemyTries);
             if (tries == 3 || enemyTries == 3) {
+                Log.d("FORBIDDENINNER", ""+tries+ "enemy:" +enemyTries);
                 changeTeam();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -142,6 +147,7 @@ public class Game implements Runnable {
      */
     public void skipWord() {
         if (skips < 3) {
+            skips++;
             try {
                 if (TEAM_A) {
                     Word temp = wordDB.getRandomWord();
@@ -259,6 +265,7 @@ public class Game implements Runnable {
                             }
                             tries = 0;
                             enemyTries = 0;
+                            skips=0;
                             if (state == A_isOnMove) {
                                 state = B_isOnMove;
                             } else if (state == B_isOnMove) {
@@ -270,6 +277,8 @@ public class Game implements Runnable {
                                 refreshStatus("B ist an der Reihe");
                             } else {
                                 refreshStatus("ERROR!");
+                                Integer i = new Integer(state);
+                                Log.d("MEINSTATUS", i.toString());
                             }
                             context.runOnUiThread(new Runnable() {
                                 @Override
@@ -283,6 +292,7 @@ public class Game implements Runnable {
                         case "changeacknowledged":
                             tries = 0;
                             enemyTries = 0;
+                            skips=0;
                             if (state == A_isOnMove) {
                                 state = B_isOnMove;
                             } else if (state == B_isOnMove) {
@@ -328,6 +338,7 @@ public class Game implements Runnable {
 
         exchangerThread = new Thread(exchanger);
         exchangerThread.start();
+        refreshStatus("A ist an der Reihe");
 
         try {
             if (TEAM_A)
