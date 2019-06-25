@@ -61,6 +61,11 @@ public class Game implements Runnable {
         enemyTries = 0;
         skips = 0;
 
+        /**
+         * Dies ist der Thread, der zur Kommunikation zwischen
+         * Server und Client dient. Hier werden sämtliche Daten
+         * ausgetauscht.
+         */
         Runnable exchanger = new Runnable() {
             @Override
             public void run() {
@@ -74,20 +79,72 @@ public class Game implements Runnable {
 
                     switch (msg) {
                         case "forbiddenword":
-                            enemyTries++;
-                            if (enemyTries == 3) {
+                            if (TEAM_A) {
+                                if (state == A_isOnMove) {
+                                    tries++;
+                                } else {
+                                    enemyTries++;
+                                }
+                            } else {
+                                if (state == A_isOnMove) {
+                                    enemyTries++;
+                                } else {
+                                    tries++;
+                                }
+                            }
+                            if (enemyTries == 3 | tries == 3) {
                                 changeTeam();
                             }
                             break;
                         case "changeteam":
-                            changeTeam();
+                            try {
+                                dos.writeUTF("changeacknowledged");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            tries = 0;
+                            enemyTries = 0;
+                            if (state == A_isOnMove) {
+                                state = B_isOnMove;
+                            } else {
+                                state = A_isOnMove;
+                            }
+                            if (state == A_isOnMove) {
+                                refreshStatus("A ist an der Reihe");
+                            } else {
+                                refreshStatus("B ist an der Reihe");
+                            }
+                            multiplayerActivity.startTimer();
+                            startRound();
                             break;
+                        case "changeacknowledged":
+                            tries = 0;
+                            enemyTries = 0;
+                            if (state == A_isOnMove) {
+                                state = B_isOnMove;
+                            } else {
+                                state = A_isOnMove;
+                            }
+                            if (state == A_isOnMove) {
+                                refreshStatus("A ist an der Reihe");
+                            } else {
+                                refreshStatus("B ist an der Reihe");
+                            }
+                            multiplayerActivity.startTimer();
+                            startRound();
+                            break;
+                        case "a":
+                            state = A_isOnMove;
+                            startPassiveTimer();
+                        case "b":
+                            state = B_isOnMove;
+                            startPassiveTimer();
                         default:
                             try {
                                 if (TEAM_A) {
                                     sendWord(wordDb.getRandomWord());
                                 } else {
-                                    Word temp = getWord();
+                                    Word temp = word1.getWordFromString(msg);
                                     refreshWord(temp.getWord(), temp.getForbiddenWords());
                                 }
                             } catch (Exception e) {
@@ -114,35 +171,8 @@ public class Game implements Runnable {
 
     }
 
-    private void negotiate() throws IOException {    //Aushandeln des Beginner-Teams
-        int sendBeginner = 0;
-        switch (begin) {
-            case ("a"):
-                sendBeginner = A_isOnMove;
-                break;
-            case ("b"):
-                sendBeginner = B_isOnMove;
-                break;
-            case ("r"):
-                sendBeginner = RANDOM_BEGIN;
-                break;
-        }
-        dos.writeInt(sendBeginner);
-        int readBeginner = dis.readInt();
-        if (readBeginner == sendBeginner) {
-            state = readBeginner;
-        }
-        if (state == RANDOM_BEGIN || readBeginner != sendBeginner) {
-            sendRandomInt();
-        }
-        switch ((state)) {
-            case (A_isOnMove):
-                refreshStatus("A beginnt");
-                break;
-            case (B_isOnMove):
-                refreshStatus("B beginnt");
-                break;
-        }
+    private void startTimer() throws IOException {    //Aushandeln des Beginner-Teams
+        dos.writeUTF(begin);
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -150,35 +180,27 @@ public class Game implements Runnable {
             }
         });
         startRound();
-
     }
 
+    private void startPassiveTimer() {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                multiplayerActivity.startTimer();
+            }
+        });
+        startRound();
+    }
+
+    /**
+     * Fordert den Server dazu auf, ein neues Wort zu erstellen.
+     */
     public void startRound() {       // startet Spielrunde
         try {
-
             if (TEAM_A) {
                 Word word = wordDB.getRandomWord();
                 sendWord(word);
                 refreshWord(word.getWord(), word.getForbiddenWords());
-
-                if (state == A_isOnMove) {
-
-
-                } else {
-                    //passiv
-
-                }
-            } else {
-                Word temp = getWord();
-                refreshWord(temp.getWord(), temp.getForbiddenWords());
-
-                if (active()) {
-                    // Team B aktiv
-
-                } else {
-                    // warte, ob neues Wort gesendet wurde (wenn A Skip Word gedrueckt hat
-
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,11 +208,26 @@ public class Game implements Runnable {
     }
 
 
+    /**
+     * Signalisiert, dass ein verbotenes Wort benutzt wurde.
+     */
     public void forbiddenWord() {
         try {
-            tries++;
+            if (TEAM_A) {
+                if (state == A_isOnMove) {
+                    tries++;
+                } else {
+                    enemyTries++;
+                }
+            } else {
+                if (state == A_isOnMove) {
+                    enemyTries++;
+                } else {
+                    tries++;
+                }
+            }
             dos.writeUTF("forbiddenword");
-            if (tries == 3) {
+            if (tries == 3 || enemyTries == 3) {
                 changeTeam();
             }
         } catch (IOException e) {
@@ -198,6 +235,9 @@ public class Game implements Runnable {
         }
     }
 
+    /**
+     * Überspringt das Wort. Pro Runde nur 3 Skips.
+     */
     public void skipWord() {
         if (skips < 3) {
             try {
@@ -207,8 +247,6 @@ public class Game implements Runnable {
                     sendWord(temp);
                 } else {
                     dos.writeUTF("skipword"); //egal welches Wort, hauptsache Server schickt neues Wort
-                    Word temp = getWord();
-                    refreshWord(temp.getWord(), temp.getForbiddenWords());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -216,17 +254,6 @@ public class Game implements Runnable {
         }
     }
 
-
-    // liest Wort aus Inputstream
-    private Word getWord() {
-        Word temp = null;
-        try {
-            temp = word1.getWordFromString(dis.readUTF());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return temp;
-    }
 
     // sendet Wort ueber Outputstream
     private void sendWord(Word word) {
@@ -288,7 +315,7 @@ public class Game implements Runnable {
     @Override
     public void run() {
         try {
-            this.negotiate();
+            this.startTimer();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -302,29 +329,8 @@ public class Game implements Runnable {
      * wechselt das aktive Team
      */
     public void changeTeam() {
-        tries = 0;
-        enemyTries = 0;
         try {
-
-            dos.writeInt(404);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (dis.readInt() == 404) {
-                if (state == A_isOnMove) {
-                    state = B_isOnMove;
-                } else {
-                    state = A_isOnMove;
-                }
-                if (state == A_isOnMove) {
-                    refreshStatus("A ist an der Reihe");
-                } else {
-                    refreshStatus("B ist an der Reihe");
-                }
-                multiplayerActivity.startTimer();
-                startRound();
-            }
+            dos.writeUTF("changeteam");
         } catch (IOException e) {
             e.printStackTrace();
         }
