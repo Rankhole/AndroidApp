@@ -256,6 +256,17 @@ public class Game implements Runnable {
                             if (enemyTries == 3 | tries == 3) {
                                 changeTeam();
                             }
+                            try {
+                                if (TEAM_A) {
+                                    Word word = wordDB.getRandomWord();
+                                    sendWord(word);
+                                    refreshWord(word.getWord(), word.getForbiddenWords());
+                                } else {
+                                    dos.writeUTF("next");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             break;
                         case "changeteam":
                             try {
@@ -322,7 +333,9 @@ public class Game implements Runnable {
                         default:
                             try {
                                 if (TEAM_A) {
-                                    sendWord(wordDB.getRandomWord());
+                                    Word word = wordDB.getRandomWord();
+                                    sendWord(word);
+                                    refreshWord(word.getWord(), word.getForbiddenWords());
                                 } else {
                                     Word temp = word1.getWordFromString(msg);
                                     refreshWord(temp.getWord(), temp.getForbiddenWords());
