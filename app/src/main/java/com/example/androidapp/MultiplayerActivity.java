@@ -35,6 +35,7 @@ public class MultiplayerActivity extends AppCompatActivity {
     private Game game;
     private WordDB wordDB;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +102,7 @@ public class MultiplayerActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+
                 counter.setText("0:00");
                 timeLeftInMilliseconds = 10000; // Timer wird wieder zurueckgesetzt
                 changeTeam.setVisibility(View.VISIBLE);
@@ -207,9 +209,8 @@ public class MultiplayerActivity extends AppCompatActivity {
     }
 
     public WordDB getWordDB() {
-
-
         return this.wordDB;
     }
+
 
 }

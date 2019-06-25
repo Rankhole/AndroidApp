@@ -2,26 +2,20 @@ package com.example.androidapp;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
 import com.example.androidapp.database.Word;
 import com.example.androidapp.database.WordDB;
-import com.example.androidapp.database.WordDBImpl;
-import com.example.androidapp.database.WordImpl;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static android.app.PendingIntent.getActivity;
-import static android.content.ContentValues.TAG;
 
 public class Game implements Runnable {
 
@@ -45,7 +39,7 @@ public class Game implements Runnable {
     private WordDB wordDB;
     Word word1 = null;
 
-    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2,TextView forb1, TextView forb2, TextView forb3, TextView forb4, WordDB wordDb)  {
+    public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, TextView forb1, TextView forb2, TextView forb3, TextView forb4, WordDB wordDb) {
         this.begin = begin;
         this.r = new Random();
         this.is = is;
@@ -57,29 +51,27 @@ public class Game implements Runnable {
         this.multiplayerActivity = context;
         this.context = context;
         this.textView = textView;
-        this.wordView=textView2;
-        this.forb1=forb1;
-        this.forb2=forb2;
-        this.forb3=forb3;
-        this.forb4=forb4;
+        this.wordView = textView2;
+        this.forb1 = forb1;
+        this.forb2 = forb2;
+        this.forb3 = forb3;
+        this.forb4 = forb4;
         if (ConnectActivity.isServer) {
             TEAM_A = true;
         } else {
             TEAM_A = false;
         }
 
-        this.wordDB=wordDb;
+        this.wordDB = wordDb;
 
         try {
-            word1=wordDb.getRandomWord();
+            word1 = wordDb.getRandomWord();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    // Aushandeln des Beginner-Teams
-    private void negotiate() throws IOException {
+    private void negotiate() throws IOException {    // Aushandeln des Beginner-Teams
         int sendBeginner = 0;
         switch (begin) {
             case ("a"):
@@ -117,29 +109,42 @@ public class Game implements Runnable {
         startRound();
 
     }
-    // startet Spielrunde
-    public void startRound() {
+
+    public void startRound() {       // startet Spielrunde
         try {
+
             if (TEAM_A) {
-                Word word=wordDB.getRandomWord();
+                Word word = wordDB.getRandomWord();
+                sendWord(word);
                 refreshWord(word.getWord(), word.getForbiddenWords());
+
                 if (state == A_isOnMove) {
 
-                    sendWord(word);
 
                 } else {
-                    sendWord(word);
-                    // int action = dis.readInt();
+                    //passiv
+
                 }
             } else {
-                Word temp=getWord();
-
+                Word temp = getWord();
                 refreshWord(temp.getWord(), temp.getForbiddenWords());
+
+                if (active()) {
+                    // Team B aktiv
+
+                }else{
+                    // warte, ob neues Wort gesendet wurde (wenn A Skip Word gedrueckt hat
+
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+
+
     // liest Wort aus Inputstream
     private Word getWord() {
         Word temp = null;
@@ -150,6 +155,7 @@ public class Game implements Runnable {
         }
         return temp;
     }
+
     // sendet Wort ueber Outputstream
     private void sendWord(Word word) {
 
@@ -181,7 +187,8 @@ public class Game implements Runnable {
 
     /**
      * aktualisiert das Textfeld status
-     * @param msg   Text, der angezeigt werden soll
+     *
+     * @param msg Text, der angezeigt werden soll
      */
     public void refreshStatus(final String msg) {
         context.runOnUiThread(new Runnable() {
@@ -192,14 +199,18 @@ public class Game implements Runnable {
         });
     }
 
-
-    private void refreshWord(final String word, List<String> forbiddenWords) {
+    private void refreshWord(final String word, final List<String> forbiddenWords) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 wordView.setText(word);
+                forb1.setText(forbiddenWords.get(0));
+                forb2.setText(forbiddenWords.get(1));
+                forb3.setText(forbiddenWords.get(2));
+                forb4.setText(forbiddenWords.get(3));
             }
         });
+
     }
 
     @Override
@@ -220,12 +231,13 @@ public class Game implements Runnable {
      */
     public void changeTeam() {
         try {
+
             dos.writeInt(404);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            if(dis.readInt()==404) {
+            if (dis.readInt() == 404) {
                 if (state == A_isOnMove) {
                     state = B_isOnMove;
                 } else {
@@ -245,4 +257,28 @@ public class Game implements Runnable {
     }
 
 
+    public boolean active(){
+        if(TEAM_A&& state==A_isOnMove){
+            return true;
+        }
+        if(!TEAM_A && state==B_isOnMove){
+            return true;
+        }
+        return false;
+    }
+
+    public int getState(){
+        return this.state;
+    }
+
+    public void setTEAM_A(boolean teamA){
+        this.TEAM_A=teamA;
+    }
+
+    public void setState(int state){
+        this.state=state;
+    }
+
 }
+
+
