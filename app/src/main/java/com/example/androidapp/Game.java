@@ -1,8 +1,6 @@
 package com.example.androidapp;
 
 import android.app.Activity;
-import android.os.Looper;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.example.androidapp.bt.ConnectActivity;
@@ -41,7 +39,6 @@ public class Game implements Runnable {
     private int tries;
     private int enemyTries;
     private int skips;
-    private Thread exchangerThread;
 
     public Game(String begin, InputStream is, OutputStream os, MultiplayerActivity context, TextView textView, TextView textView2, TextView forb1, TextView forb2, TextView forb3, TextView forb4, final WordDB wordDb) {
         this.begin = begin;
@@ -63,7 +60,105 @@ public class Game implements Runnable {
         tries = 0;
         enemyTries = 0;
         skips = 0;
-        state = A_isOnMove;
+
+        /**
+         * Dies ist der Thread, der zur Kommunikation zwischen
+         * Server und Client dient. Hier werden sämtliche Daten
+         * ausgetauscht.
+         */
+        Runnable exchanger = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    String msg = null;
+                    try {
+                        msg = dis.readUTF();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    switch (msg) {
+                        case "forbiddenword":
+                            if (TEAM_A) {
+                                if (state == A_isOnMove) {
+                                    tries++;
+                                } else {
+                                    enemyTries++;
+                                }
+                            } else {
+                                if (state == A_isOnMove) {
+                                    enemyTries++;
+                                } else {
+                                    tries++;
+                                }
+                            }
+                            if (enemyTries == 3 | tries == 3) {
+                                changeTeam();
+                            }
+                            break;
+                        case "changeteam":
+                            try {
+                                dos.writeUTF("changeacknowledged");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            tries = 0;
+                            enemyTries = 0;
+                            if (state == A_isOnMove) {
+                                state = B_isOnMove;
+                            } else {
+                                state = A_isOnMove;
+                            }
+                            if (state == A_isOnMove) {
+                                refreshStatus("A ist an der Reihe");
+                            } else {
+                                refreshStatus("B ist an der Reihe");
+                            }
+                            multiplayerActivity.startTimer();
+                            startRound();
+                            break;
+                        case "changeacknowledged":
+                            tries = 0;
+                            enemyTries = 0;
+                            if (state == A_isOnMove) {
+                                state = B_isOnMove;
+                            } else {
+                                state = A_isOnMove;
+                            }
+                            if (state == A_isOnMove) {
+                                refreshStatus("A ist an der Reihe");
+                            } else {
+                                refreshStatus("B ist an der Reihe");
+                            }
+                            multiplayerActivity.startTimer();
+                            startRound();
+                            break;
+                        case "a":
+                            state = A_isOnMove;
+                            startPassiveTimer();
+                        case "b":
+                            state = B_isOnMove;
+                            startPassiveTimer();
+                        default:
+                            try {
+                                if (TEAM_A) {
+                                    sendWord(wordDb.getRandomWord());
+                                } else {
+                                    Word temp = word1.getWordFromString(msg);
+                                    refreshWord(temp.getWord(), temp.getForbiddenWords());
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
+                }
+            }
+        };
+
+        Thread exchangerThread = new Thread(exchanger);
+        exchangerThread.start();
+
         TEAM_A = ConnectActivity.isServer;
 
         this.wordDB = wordDb;
@@ -73,6 +168,7 @@ public class Game implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void startTimer() throws IOException {    //Aushandeln des Beginner-Teams
@@ -218,140 +314,12 @@ public class Game implements Runnable {
 
     @Override
     public void run() {
-        /**
-         * Dies ist der Thread, der zur Kommunikation zwischen
-         * Server und Client dient. Hier werden sämtliche Daten
-         * ausgetauscht.
-         */
-        Runnable exchanger = new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    String msg = null;
-                    try {
-                        msg = dis.readUTF();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    switch (msg) {
-                        case "forbiddenword":
-                            if (TEAM_A) {
-                                if (state == A_isOnMove) {
-                                    tries++;
-                                } else {
-                                    enemyTries++;
-                                }
-                            } else {
-                                if (state == A_isOnMove) {
-                                    enemyTries++;
-                                } else {
-                                    tries++;
-                                }
-                            }
-                            if (enemyTries == 3 | tries == 3) {
-                                changeTeam();
-                            }
-                            break;
-                        case "changeteam":
-                            try {
-                                dos.writeUTF("changeacknowledged");
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            tries = 0;
-                            enemyTries = 0;
-                            if (state == A_isOnMove) {
-                                state = B_isOnMove;
-                            } else if (state == B_isOnMove) {
-                                state = A_isOnMove;
-                            }
-                            if (state == A_isOnMove) {
-                                refreshStatus("A ist an der Reihe");
-                            } else {
-                                refreshStatus("B ist an der Reihe");
-                            }
-
-                            context.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    multiplayerActivity.startTimer();
-                                }
-                            });
-                            startRound();
-                            break;
-                        case "changeacknowledged":
-                            tries = 0;
-                            enemyTries = 0;
-
-                            if (state == A_isOnMove) {
-                                state = B_isOnMove;
-                            } else if (state == B_isOnMove) {
-                                state = A_isOnMove;
-                            }
-                            if (state == A_isOnMove) {
-                                refreshStatus("A ist an der Reihe");
-                            } else if(state==B_isOnMove){
-                                refreshStatus("B ist an der Reihe");
-                            }else{
-                            refreshStatus("error");
-                        }
-                    }
-
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            multiplayerActivity.startTimer();
-                        }
-                    });
-                    startRound();
-                    break;
-                    case "a":
-                        state = A_isOnMove;
-                        startPassiveTimer();
-                        break;
-                    case "b":
-                        state = B_isOnMove;
-                        startPassiveTimer();
-                        break;
-                    default:
-                        Log.d("WORD", msg);
-                        try {
-                            if (TEAM_A) {
-                                sendWord(wordDB.getRandomWord());
-                            } else {
-                                Word temp = word1.getWordFromString(msg);
-                                refreshWord(temp.getWord(), temp.getForbiddenWords());
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                }
-            }
+        try {
+            this.startTimer();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
-    ;
-
-    exchangerThread =new
-
-    Thread(exchanger);
-        exchangerThread.start();
-
-        try
-
-    {
-        if (TEAM_A)
-            this.startTimer();
-    } catch(
-    IOException e)
-
-    {
-        e.printStackTrace();
-    }
-
-}
 
     public String getStatus() {
         return this.status;
