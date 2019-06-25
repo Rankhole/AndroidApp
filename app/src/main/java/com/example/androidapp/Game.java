@@ -261,15 +261,22 @@ public class Game implements Runnable {
                             enemyTries = 0;
                             if (state == A_isOnMove) {
                                 state = B_isOnMove;
-                            } else {
+                            } else if (state == B_isOnMove) {
                                 state = A_isOnMove;
                             }
                             if (state == A_isOnMove) {
                                 refreshStatus("A ist an der Reihe");
-                            } else {
+                            } else if (state == B_isOnMove) {
                                 refreshStatus("B ist an der Reihe");
+                            } else {
+                                refreshStatus("ERROR!");
                             }
-                            multiplayerActivity.startTimer();
+                            context.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    multiplayerActivity.startTimer();
+                                }
+                            });
                             startRound();
                             break;
                         case "changeacknowledged":
@@ -277,15 +284,22 @@ public class Game implements Runnable {
                             enemyTries = 0;
                             if (state == A_isOnMove) {
                                 state = B_isOnMove;
-                            } else {
+                            } else if (state == B_isOnMove) {
                                 state = A_isOnMove;
                             }
                             if (state == A_isOnMove) {
                                 refreshStatus("A ist an der Reihe");
-                            } else {
+                            } else if (state == B_isOnMove) {
                                 refreshStatus("B ist an der Reihe");
+                            } else {
+                                refreshStatus("ERROR!");
                             }
-                            multiplayerActivity.startTimer();
+                            context.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    multiplayerActivity.startTimer();
+                                }
+                            });
                             startRound();
                             break;
                         case "a":
